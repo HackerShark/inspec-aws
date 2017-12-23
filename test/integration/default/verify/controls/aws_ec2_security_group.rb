@@ -39,3 +39,12 @@ control "aws_ec2_security_group properties" do
   end
 
 end
+
+control "aws_ec2_security_group ingress_rules" do
+  describe aws_ec2_security_group('sg-12345678') do
+    its('ingress_rules.count') { should be 2 }
+    its('ingress_rules.last') { should include(:source =>'0.0.0.0/0') }
+    # it { should_not be_open_to_the_world_on_port(22) }
+    its('ingress_rules.first') { should include(source: 'sg-87654321', port_from: 22, port_to: 22) }
+  end
+end

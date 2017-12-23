@@ -8,10 +8,10 @@ class AwsEc2SecurityGroup < Inspec.resource(1)
   '
 
   include AwsResourceMixin
-  attr_reader :description, :group_id, :group_name, :vpc_id
+  attr_reader :description, :group_id, :group_name, :vpc_id, :ingress_rules
 
   def to_s
-    'EC2 Security Group'
+    "EC2 Security Group #{@group_id}"
   end
 
   private
@@ -19,7 +19,7 @@ class AwsEc2SecurityGroup < Inspec.resource(1)
   def validate_params(raw_params)
     recognized_params = check_resource_param_names(
       raw_params: raw_params,
-      allowed_params: [:id, :group_id, :group_name, :vpc_id],
+      allowed_params: [:id, :group_id, :group_name, :vpc_id, :ingress_rules],
       allowed_scalar_name: :group_id,
       allowed_scalar_type: String,
     )
@@ -53,6 +53,7 @@ class AwsEc2SecurityGroup < Inspec.resource(1)
       :group_id,
       :group_name,
       :vpc_id,
+      :ingress_rules,
     ].each do |criterion_name|
       val = instance_variable_get("@#{criterion_name}".to_sym)
       next if val.nil?
@@ -75,6 +76,7 @@ class AwsEc2SecurityGroup < Inspec.resource(1)
     @group_id   = dsg_response.security_groups[0].group_id
     @group_name = dsg_response.security_groups[0].group_name
     @vpc_id     = dsg_response.security_groups[0].vpc_id
+    @ingress_rules = dsg_response.security_groups[0].ip_permissions
   end
 
   class Backend
