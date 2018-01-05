@@ -31,8 +31,18 @@ class AwsEc2SecurityGroups < Inspec.resource(1)
     @table
   end
 
+
   def to_s
-    'EC2 Security Groups'
+    return "EC2 Security Groups #{@table[0][:group_id]}" if @table.count == 1
+    all_names = ''
+    @table.each do |key|
+      if all_names == '' then
+        all_names += key[:group_id]
+      else
+        all_names += ', ' + key[:group_id]
+      end
+    end
+    "EC2 Security Groups #{all_names}"
   end
 
   private
